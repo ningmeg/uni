@@ -22,8 +22,40 @@ export default {
 					console.log(res.data[0]);
 					this.listsdata = res.data[0];
 					console.log(this.listsdata);
+				},
+				fail: (err) => {
+					// console.log(err);
+					if (err.errMsg === 'request:fail timeout') {
+						// 在请求超时时触发弹窗显示逻辑
+						uni.showToast({
+							title: '没有数据，请返回',
+							icon: 'none'
+						});
+					}
 				}
 			});
+		},
+		guowu(e) {
+			uni.showToast({
+				title: `点击${e.content.text}`,
+				icon: 'none'
+			});
+			console.log(e);
+		},
+		guowuyou(e) {
+			console.log(e);
+		},
+		jiamai(){
+			uni.request({
+				url:'http://127.0.0.1:8081/GetYonghu',
+				data:{
+					id: this.id,
+					name: this.name
+				},
+				success: (res) => {
+					console.log(res.data);
+				}
+			})
 		}
 	},
 	mounted() {
@@ -45,7 +77,7 @@ export default {
 				<image class="tubiao" :src="listsdata.img" mode="widthFix"></image>
 			</view>
 			<view class="flex" style="padding: 0 20px; flex-wrap: wrap; align-content: space-around">
-				<view class="flex" style="flex-wrap: wrap">
+				<view class="flex kuan" style="flex-wrap: wrap">
 					<view class="kuan">
 						{{ listsdata.name }}
 					</view>
@@ -53,10 +85,16 @@ export default {
 						{{ listsdata.type }}
 					</view>
 				</view>
-
-				<view class="flex kuan">
-					<view style="margin-right: 20px">库存{{ listsdata.inventory }}份</view>
-					<view style="color: brown">{{ listsdata.Price }}￥</view>
+				<view>
+					<view class="flex kuan">
+						<view style="margin-right: 20px">库存{{ listsdata.inventory }}份</view>
+						<view style="color: brown">{{ listsdata.Price }}￥</view>
+					</view>
+					<view class="flex" style="align-items: center;">
+						<uni-icons @click="jianmai" v-if="listsdata.purchase===0" type="minus" size="30"></uni-icons>
+						{{ listsdata.purchase }}
+						<uni-icons @click="jiamai" type="plus" size="30"></uni-icons>
+					</view>
 				</view>
 			</view>
 		</view>
@@ -74,15 +112,15 @@ export default {
 			<view style="">
 				<view class="fontDa">商品评价:</view>
 				<!-- 评价循环体 -->
-				<view class="flex" style="align-items: center;padding-top: 10px;">
-					<view class="flex" style="margin-right: 100px;align-items: flex-end;">
+				<view class="flex" style="align-items: center; padding-top: 10px">
+					<view class="flex" style="margin-right: 100px; align-items: flex-end">
 						<uni-icons type="contact" size="30"></uni-icons>
-						<view style="margin-left: 10px;">acaca113</view>
+						<view style="margin-left: 10px">acaca113</view>
 					</view>
-					<view class="flex" style="align-items: center;">
+					<view class="flex" style="align-items: center">
 						<image v-for="item in 4" style="width: 15px" src="../../static/image/star24_on@2x.png" :key="item" mode="widthFix"></image>
 						<image v-for="item in 1" style="width: 15px" src="../../static/image/star24_off@2x.png" :key="item" mode="widthFix"></image>
-						<view style="padding: 2px;border: 1px #000000 solid;border-radius: 5px;font-size: 12px;margin-left: 20px;">好评</view>
+						<view style="padding: 2px; border: 1px #000000 solid; border-radius: 5px; font-size: 12px; margin-left: 20px">好评</view>
 					</view>
 				</view>
 
@@ -91,6 +129,8 @@ export default {
 				</view>
 			</view>
 		</view>
+
+		<uni-goods-nav @click="guowu" @buttonClick="guowuyou" class="paddbuttom kuan" />
 	</view>
 </template>
 
@@ -111,6 +151,10 @@ export default {
 .fontXiao {
 	font-size: 12px;
 	color: #bdc3c7;
+}
+.paddbuttom {
+	position: fixed;
+	bottom: 0;
 }
 
 /* #ifdef H5 */
