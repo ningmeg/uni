@@ -62,7 +62,7 @@ export default {
 				},
 				timeout: 5000, // 设置超时时间为5秒
 				success: (res) => {
-					// console.log(res.data);
+					console.log(res.data);
 					this.listsDtada = res.data;
 				},
 				fail: (err) => {

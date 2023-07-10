@@ -43,8 +43,8 @@ export default {
 	methods: {
 		guowu(e) {
 			let aa = e.content.text;
-			if (aa === '收藏') {
-				console.log(store.state.dangqianid, store.state.danqianname);
+			if (aa === '收藏'||aa==='已收藏') {
+				// console.log(store.state.dangqianid, store.state.danqianname);
 				uni.request({
 					url: 'http://127.0.0.1:8081/ShouCang',
 					data: {
@@ -52,9 +52,9 @@ export default {
 						name: store.state.danqianname
 					},
 					success: (res) => {
-						console.log(res.data.collection[0].collection);
+						// console.log(res.data.bor);
 
-						if (res.data.collection[0].collection === 1) {
+						if (res.data.bor === 1) {
 							this.options[0].text = '已收藏';
 							uni.showToast({
 								title: `收藏成功`,
@@ -64,6 +64,15 @@ export default {
 							this.options[0].text = '收藏';
 							uni.showToast({
 								title: `取消收藏`,
+								icon: 'none'
+							});
+						}
+					},
+					fail: (err) => {
+						if (err.errMsg === 'request:fail timeout') {
+							// 在请求超时时触发弹窗显示逻辑
+							uni.showToast({
+								title: '没有数据，请返回',
 								icon: 'none'
 							});
 						}

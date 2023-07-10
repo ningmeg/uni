@@ -22,6 +22,8 @@ app.get("/listData", async function (req, res) {
     await getlistdata.QueryAllData();
   } else if (req.query.text === "热门") {
     await getlistdata.HotData();
+  } else if (req.query.text === "收藏") {
+    await getlistdata.Shoucang();
   }
 });
 
@@ -50,6 +52,17 @@ class getListsData {
     } catch (error) {
       // 处理错误并发送适当的错误响应
       this.res.status(500).send("请求超时");
+    }
+  }
+  async Shoucang() {
+    try {
+      // console.log(this.res,this.req);
+      let collection = await db.select("*").from("yonghu").queryList();
+      const filteredData = collection.filter(item => item.collection !== '0');
+      this.res.send(filteredData)
+      // console.log(filteredData);
+    } catch (error) {
+      console.log(error);
     }
   }
 }
@@ -166,7 +179,7 @@ app.get("/ShouCang", async function (req, res) {
       .where("id", id, "name", name)
       .execute();
 
-    res.send({ collection });
+    res.send({ bor });
   } catch (error) {
     console.log(error);
   }
@@ -176,10 +189,7 @@ app.get("/ShouCangChaKan", async function (req, res) {
   try {
     let id = req.query.id,
       name = req.query.name,
-      collection = await db
-        .select('*')
-        .from("yonghu")
-        .queryList();
+      collection = await db.select("*").from("yonghu").queryList();
     console.log(collection);
     res.send({ collection });
   } catch (error) {
